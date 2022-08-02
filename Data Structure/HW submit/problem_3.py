@@ -1,6 +1,6 @@
 import sys
 import heapq
-
+import random
 
 class Node:
     def __init__(self, count, char = None):
@@ -38,9 +38,9 @@ def huffman_encoding(data):
 
     # special case
     if data == None:
-        return None
+        return None, None
     if len(data) == 0:
-        return data
+        return '0', None
 
 
     # build count map
@@ -83,8 +83,119 @@ def huffman_encoding(data):
 
     return encoded_data, tree_root
 
+def find(index, cache, tree):
+    if tree.get_char():
+        return tree.get_char()
+    if index == len(cache) :
+        return None
+    if cache[index] == '1':
+        return find(index + 1, cache, tree.right)
+    else : 
+        return find(index + 1, cache, tree.left)
+
+
+
 def huffman_decoding(data,tree):
-    pass
+    if data == None:
+        return None
+    if tree == None:
+        return ""
+
+    
+    huffman_code_map = dict()
+    cache = ''
+    decoded_data = ""
+
+    for bit in data:
+        cache = cache + bit
+        char = ''
+        if cache not in huffman_code_map:
+            char = find(0, cache, tree)
+        else:
+            char = huffman_code_map[cache]
+        
+        huffman_code_map[cache] = char
+        if char :
+            decoded_data = decoded_data + char
+            cache = ''
+    return decoded_data
+
+
+
+# Add your own test cases: include at least three test cases
+# and two of them must include edge cases, such as null, empty or very large values
+
+# Test Case 1
+def test_empty():
+    a_great_sentence = ""
+
+    print ("The size of the data is: {}\n".format(sys.getsizeof(a_great_sentence)))
+    print ("The content of the data is: {}\n".format(a_great_sentence))
+
+    encoded_data, tree = huffman_encoding(a_great_sentence)
+
+    print ("The size of the encoded data is: {}\n".format(sys.getsizeof(int(encoded_data, base=2))))
+    print ("The content of the encoded data is: {}\n".format(encoded_data))
+
+    decoded_data = huffman_decoding(encoded_data, tree)
+
+    print ("The size of the decoded data is: {}\n".format(sys.getsizeof(decoded_data)))
+    print ("The content of the encoded data is: {}\n".format(decoded_data))
+
+    print(decoded_data == a_great_sentence)
+
+
+
+
+# Test Case 2
+def test_sample():
+    a_great_sentence = "abbcccddddeeeeeffffff"
+
+    print ("The size of the data is: {}\n".format(sys.getsizeof(a_great_sentence)))
+    print ("The content of the data is: {}\n".format(a_great_sentence))
+
+    encoded_data, tree = huffman_encoding(a_great_sentence)
+
+    print ("The size of the encoded data is: {}\n".format(sys.getsizeof(int(encoded_data, base=2))))
+    print ("The content of the encoded data is: {}\n".format(encoded_data))
+
+    decoded_data = huffman_decoding(encoded_data, tree)
+
+    print ("The size of the decoded data is: {}\n".format(sys.getsizeof(decoded_data)))
+    print ("The content of the encoded data is: {}\n".format(decoded_data))
+
+    print(decoded_data == a_great_sentence)
+
+
+
+
+# Test Case 3
+def test_random():
+    chars = ['a', 'b', 'c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
+
+    a_great_sentence = ""
+    
+    for i in range(100):
+        a_great_sentence = a_great_sentence + chars[random.randrange(27)]
+
+    print ("The size of the data is: {}\n".format(sys.getsizeof(a_great_sentence)))
+    print ("The content of the data is: {}\n".format(a_great_sentence))
+
+    encoded_data, tree = huffman_encoding(a_great_sentence)
+
+    print ("The size of the encoded data is: {}\n".format(sys.getsizeof(int(encoded_data, base=2))))
+    print ("The content of the encoded data is: {}\n".format(encoded_data))
+
+    decoded_data = huffman_decoding(encoded_data, tree)
+
+    print ("The size of the decoded data is: {}\n".format(sys.getsizeof(decoded_data)))
+    print ("The content of the encoded data is: {}\n".format(decoded_data))
+
+    print(decoded_data == a_great_sentence)
+
+
+
+
 
 if __name__ == "__main__":
     codes = {}
@@ -103,12 +214,8 @@ if __name__ == "__main__":
 
     print ("The size of the decoded data is: {}\n".format(sys.getsizeof(decoded_data)))
     print ("The content of the encoded data is: {}\n".format(decoded_data))
+    print(decoded_data == a_great_sentence)
 
-# Add your own test cases: include at least three test cases
-# and two of them must include edge cases, such as null, empty or very large values
-
-# Test Case 1
-
-# Test Case 2
-
-# Test Case 3
+    test_empty()
+    test_sample()
+    test_random()
